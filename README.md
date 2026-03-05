@@ -78,9 +78,12 @@ The dashboard includes:
 - **🔋 Battery Operations Panel** - Link automations/scripts/scenes without editing YAML
 - **📅 Today's Energy Windows** - View current charge/discharge periods with pricing
 - **🌅 Tomorrow's Energy Windows** - Plan ahead with tomorrow's schedules
+- **☀️ PV Forecast Panel** - Configure PV-aware charging, sunrise SOC target, and winter reserve settings
 - **⚙️ Complete Settings Control** - Adjust ALL integration settings from the dashboard:
   - Pricing windows and percentiles
   - Battery SOC safety limits
+  - PV forecast source and sensor references
+  - Winter reserve minimum SOC and active winter months
   - Time and price overrides
   - Notification preferences with quiet hours
   - Tomorrow's independent settings
@@ -165,3 +168,26 @@ Thank you for using Cheapest Energy Windows Dashboard!
 - Set up battery operations linking if you have a battery system
 - Check the integration's sensors for detailed energy data
 {% endif %}
+
+## ☀️ PV Forecast Support
+
+The dashboard includes a dedicated `PV Forecast & Grid Charging` section (Today and Tomorrow settings areas).
+
+### Prerequisites
+
+- `sensor.cew_today` and `sensor.cew_tomorrow` must come from a CEW integration version that exposes PV attributes.
+- A valid battery SOC sensor should be configured in CEW.
+- A valid battery total capacity sensor (kWh) should be configured.
+- Forecast sensors should provide:
+  - Remaining PV today (kWh)
+  - PV tomorrow total (kWh)
+
+### Fallback Behavior
+
+If required data is missing, PV optimization is skipped safely and CEW keeps standard charging behavior.
+The dashboard surfaces this via `pv_fallback_reason` in the PV status card.
+
+### Winter Reserve
+
+When winter reserve is enabled and the current month matches the configured CSV month list
+(for example `11,12,1,2`), CEW enforces a minimum SOC floor (`winter_min_soc`) before reducing grid charging.

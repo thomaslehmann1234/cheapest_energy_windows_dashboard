@@ -482,6 +482,22 @@ class CheapestEnergyWindowsStrategy extends HTMLElement {
                           },
                           {
                             "type": "custom:mushroom-template-card",
+                            "primary": "PV Adjust",
+                            "secondary": "{% set active = state_attr('sensor.cew_today', 'pv_adjustment_active') %}{% set adj = state_attr('sensor.cew_today', 'pv_adjusted_charge_windows') | int(0) %}{% set cfg = state_attr('sensor.cew_today', 'configured_charge_windows') | int(0) %}{% set offset = state_attr('sensor.cew_today', 'pv_offset_kwh') | float(0) %}{% set net = state_attr('sensor.cew_today', 'net_grid_charge_kwh') | float(0) %}{% set winter = state_attr('sensor.cew_today', 'winter_reserve_active') %}{% set fallback = state_attr('sensor.cew_today', 'pv_fallback_reason') | default('', true) %}{{ adj }}/{{ cfg }} windows · PV {{ offset | round(1) }} kWh{{ '\\n' }}Grid {{ net | round(1) }} kWh · Winter {{ 'On' if winter else 'Off' }}{% if fallback %}{{ '\\n' }}Fallback: {{ fallback }}{% endif %}",
+                            "multiline_secondary": true,
+                            "icon": "mdi:solar-power",
+                            "tap_action": {
+                              "action": "none"
+                            },
+                            "color": "{% if state_attr('sensor.cew_today', 'pv_adjustment_active') %}green{% elif state_attr('sensor.cew_today', 'pv_fallback_reason') %}orange{% else %}blue{% endif %}",
+                            "vertical": true,
+                            "features_position": "bottom",
+                            "card_mod": {
+                              "style": "ha-card {\nmargin-left: -22px;\nmargin-top: -8px;\nborder-radius: 0;\nborder: 0;\n}\n"
+                            }
+                          },
+                          {
+                            "type": "custom:mushroom-template-card",
                             "primary": "Cost",
                             "secondary": "{% set current = state_attr('sensor.cew_today', 'total_cost') | float(0) %} {% set planned = state_attr('sensor.cew_today', 'planned_total_cost') | float(0) %} {{ '€' + ('%.2f' | format(current)) }}/{{ '€' + ('%.2f' | format(planned)) }}",
                             "icon": "mdi:currency-eur",
@@ -665,6 +681,52 @@ class CheapestEnergyWindowsStrategy extends HTMLElement {
                                   {
                                     "entity": "time.cew_calculation_window_end",
                                     "name": "Window End Time"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "custom:fold-entity-row",
+                                "head": {
+                                  "type": "section",
+                                  "label": "🌤️ PV Forecast & Grid Charging"
+                                },
+                                "padding": 5,
+                                "entities": [
+                                  {
+                                    "entity": "switch.cew_pv_forecast_enabled",
+                                    "name": "Enable PV Forecast Optimization"
+                                  },
+                                  {
+                                    "entity": "select.cew_pv_source",
+                                    "name": "PV Source"
+                                  },
+                                  {
+                                    "entity": "number.cew_soc_target_sunrise",
+                                    "name": "SOC Target at Sunrise"
+                                  },
+                                  {
+                                    "entity": "text.cew_pv_forecast_remaining_today_sensor",
+                                    "name": "Forecast Remaining Today Sensor"
+                                  },
+                                  {
+                                    "entity": "text.cew_pv_forecast_tomorrow_sensor",
+                                    "name": "Forecast Tomorrow Sensor"
+                                  },
+                                  {
+                                    "entity": "text.cew_battery_total_capacity_sensor",
+                                    "name": "Battery Capacity Sensor"
+                                  },
+                                  {
+                                    "entity": "switch.cew_winter_reserve_enabled",
+                                    "name": "Enable Winter Reserve"
+                                  },
+                                  {
+                                    "entity": "number.cew_winter_min_soc",
+                                    "name": "Winter Min SOC"
+                                  },
+                                  {
+                                    "entity": "text.cew_winter_months",
+                                    "name": "Winter Months (CSV)"
                                   }
                                 ]
                               }
@@ -1301,6 +1363,22 @@ class CheapestEnergyWindowsStrategy extends HTMLElement {
                           },
                           {
                             "type": "custom:mushroom-template-card",
+                            "primary": "PV Adjust",
+                            "secondary": "{% set adj = state_attr('sensor.cew_tomorrow', 'pv_adjusted_charge_windows') | int(0) %}{% set cfg = state_attr('sensor.cew_tomorrow', 'configured_charge_windows') | int(0) %}{% set offset = state_attr('sensor.cew_tomorrow', 'pv_offset_kwh') | float(0) %}{% set net = state_attr('sensor.cew_tomorrow', 'net_grid_charge_kwh') | float(0) %}{% set winter = state_attr('sensor.cew_tomorrow', 'winter_reserve_active') %}{% set fallback = state_attr('sensor.cew_tomorrow', 'pv_fallback_reason') | default('', true) %}{{ adj }}/{{ cfg }} windows · PV {{ offset | round(1) }} kWh{{ '\\n' }}Grid {{ net | round(1) }} kWh · Winter {{ 'On' if winter else 'Off' }}{% if fallback %}{{ '\\n' }}Fallback: {{ fallback }}{% endif %}",
+                            "multiline_secondary": true,
+                            "icon": "mdi:solar-power",
+                            "tap_action": {
+                              "action": "none"
+                            },
+                            "color": "{% if state_attr('sensor.cew_tomorrow', 'pv_adjustment_active') %}green{% elif state_attr('sensor.cew_tomorrow', 'pv_fallback_reason') %}orange{% else %}blue{% endif %}",
+                            "vertical": true,
+                            "features_position": "bottom",
+                            "card_mod": {
+                              "style": "ha-card {\nmargin-left: -22px;\nmargin-top: -8px;\nborder-radius: 0;\nborder: 0;\n}\n"
+                            }
+                          },
+                          {
+                            "type": "custom:mushroom-template-card",
                             "primary": "Cost",
                             "secondary": "{% set planned = state_attr('sensor.cew_tomorrow', 'planned_total_cost') | float(0) %} {{ '€' + ('%.2f' | format(planned)) }}",
                             "icon": "mdi:currency-eur",
@@ -1506,6 +1584,52 @@ class CheapestEnergyWindowsStrategy extends HTMLElement {
                                   {
                                     "entity": "time.cew_calculation_window_end_tomorrow",
                                     "name": "Window End Time"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "custom:fold-entity-row",
+                                "head": {
+                                  "type": "section",
+                                  "label": "🌤️ PV Forecast & Grid Charging"
+                                },
+                                "padding": 5,
+                                "entities": [
+                                  {
+                                    "entity": "switch.cew_pv_forecast_enabled",
+                                    "name": "Enable PV Forecast Optimization"
+                                  },
+                                  {
+                                    "entity": "select.cew_pv_source",
+                                    "name": "PV Source"
+                                  },
+                                  {
+                                    "entity": "number.cew_soc_target_sunrise",
+                                    "name": "SOC Target at Sunrise"
+                                  },
+                                  {
+                                    "entity": "text.cew_pv_forecast_remaining_today_sensor",
+                                    "name": "Forecast Remaining Today Sensor"
+                                  },
+                                  {
+                                    "entity": "text.cew_pv_forecast_tomorrow_sensor",
+                                    "name": "Forecast Tomorrow Sensor"
+                                  },
+                                  {
+                                    "entity": "text.cew_battery_total_capacity_sensor",
+                                    "name": "Battery Capacity Sensor"
+                                  },
+                                  {
+                                    "entity": "switch.cew_winter_reserve_enabled",
+                                    "name": "Enable Winter Reserve"
+                                  },
+                                  {
+                                    "entity": "number.cew_winter_min_soc",
+                                    "name": "Winter Min SOC"
+                                  },
+                                  {
+                                    "entity": "text.cew_winter_months",
+                                    "name": "Winter Months (CSV)"
                                   }
                                 ]
                               }

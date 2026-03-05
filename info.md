@@ -55,8 +55,15 @@ strategy:
 - 📊 Visual charts for today and tomorrow
 - ⚡ Charge/discharge window displays
 - ⚙️ Full configuration panel
+- ☀️ PV forecast optimization controls
 - 💰 Cost tracking and projections
 - 🔋 Battery management (if enabled)
+
+### PV Forecast Notes
+
+- Configure PV forecast and battery capacity sensor entities directly in the dashboard.
+- If PV/SOC/capacity data is missing, CEW falls back to standard behavior and reports `pv_fallback_reason`.
+- Optional winter reserve enforces a minimum SOC floor during configured winter months.
 
 ## Support
 
